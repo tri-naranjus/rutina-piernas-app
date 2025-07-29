@@ -4,578 +4,425 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registro de Entrenamiento de Piernas</title>
-  <!-- Import React y Chart.js desde CDN -->
+  <!-- Tailwind CSS via CDN for rapid styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React and ReactDOM via CDN -->
   <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-  <!-- Babel permite escribir JSX directamente en este archivo -->
+  <!-- Babel to enable JSX in the browser -->
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Tailwind CSS para una interfaz visual moderna -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f7f7f7;
-    }
-    h1 {
-      text-align: center;
-    }
-    form {
-      background: #fff;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    form div {
-      margin-bottom: 10px;
-    }
-    label {
-      display: block;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
-    }
-    button {
-      padding: 8px 12px;
-      margin-right: 5px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button.delete {
-      background-color: #dc3545;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    .chart-container {
-      margin-top: 30px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .suggestions {
-      margin-top: 30px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Sección de programa de entrenamiento */
-    .program-section {
-      margin-top: 30px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .program-section h2 {
-      margin-top: 0;
-    }
-    .program-section select {
-      padding: 6px;
-      margin-right: 10px;
-      border-radius: 4px;
-    }
-    .program-section table {
-      width: 100%;
-      margin-top: 10px;
-      border-collapse: collapse;
-    }
-    .program-section th, .program-section td {
-      padding: 6px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-
-  </style>
+  <!-- Chart.js for future graph functionality (optional) -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
 </head>
-<body>
-  <h1>Registro de Entrenamiento de Piernas</h1>
-  <div id="root"></div>
-
+<body class="bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 min-h-screen flex justify-center p-4">
+  <div id="root" class="w-full max-w-5xl"></div>
   <script type="text/babel">
-    /*
-      Aplicación web para registrar entrenamientos de pierna y visualizar
-      la progresión. Incluye un plan predefinido de tres fases (adaptación,
-      fuerza máxima y potencia/velocidad) con dos días de entrenamiento cada
-      semana. Permite seleccionar la fase y el día para consultar los
-      ejercicios recomendados y registrar tus sesiones. La información se
-      guarda en localStorage y se visualiza en tablas y gráficos. Además,
-      propone una carga sugerida para la próxima sesión incrementando un 5 %
-      el peso máximo registrado para cada ejercicio.
-    */
-
-    // Plan de entrenamiento estructurado por fases y días. Cada entrada contiene
-    // el nombre del ejercicio, el número de series y repeticiones, y una
-    // descripción breve de la indicación o progresión.
-    const PLAN = {
-      1: {
-        1: [
-          { exercise: 'Sentadilla trasera/Smith', sets: '3 × 6–8', instructions: 'Carga al 60–70 % 1RM. Mantener la velocidad > 0,5 m/s y profundidad controlada.' },
-          { exercise: 'Peso muerto rumano', sets: '3 × 6–8', instructions: 'Énfasis en isquiotibiales y glúteos. Espalda neutra y movimiento explosivo.' },
-          { exercise: 'Zancadas caminando', sets: '2 × 8 por pierna', instructions: 'Utilizar mancuernas ligeras. Subir rápido (> 0,8 m/s) y descender controlado.' },
-          { exercise: 'Elevaciones de talón (gemelos)', sets: '3 × 10–12', instructions: 'Carga moderada; foco en la explosividad del ascenso.' }
+    // Plan definition: phases, days and exercises with sets, reps and instructions.
+    // Each exercise also has an emoji to make the UI more friendly.
+    const plan = {
+      'Fase 1 – Adaptación': {
+        'Día 1': [
+          {
+            name: 'Sentadilla trasera/Smith',
+            setsReps: '3 × 6–8',
+            instructions: 'Carga al 60–70 % 1RM. Mantener la velocidad > 0,5 m/s y la profundidad controlada.',
+            emoji: '🏋️'
+          },
+          {
+            name: 'Peso muerto rumano',
+            setsReps: '3 × 6–8',
+            instructions: 'Énfasis en isquiotibiales y glúteos. Espalda neutra y movimiento explosivo.',
+            emoji: '🦵'
+          },
+          {
+            name: 'Zancadas caminando',
+            setsReps: '2 × 8 por pierna',
+            instructions: 'Utilizar mancuernas ligeras. Subir rápido (> 0,8 m/s) y descender controlado.',
+            emoji: '🚶'
+          },
+          {
+            name: 'Elevaciones de talón (gemelos)',
+            setsReps: '3 × 10–12',
+            instructions: 'Carga moderada; foco en la explosividad del ascenso.',
+            emoji: '🐐'
+          }
         ],
-        2: [
-          { exercise: 'Sentadilla frontal', sets: '3 × 6–8', instructions: 'Carga al 60–70 %. Torso erguido y velocidad > 0,5 m/s.' },
-          { exercise: 'Prensa de pierna unipodal', sets: '3 × 6–8 por pierna', instructions: 'Monitorizar la velocidad para evitar empujar lentamente.' },
-          { exercise: 'Step‑up sobre caja con rodilla alta', sets: '2 × 8 por pierna', instructions: 'Subir rápidamente (1,0–1,2 m/s) y descender controlado.' },
-          { exercise: 'Flexión de cadera con banda/elástico', sets: '2 × 10 por pierna', instructions: 'Alta velocidad; mejora la subida de rodilla en carrera y ciclismo.' }
+        'Día 2': [
+          {
+            name: 'Sentadilla frontal (barra o kettlebell)',
+            setsReps: '3 × 6–8',
+            instructions: 'Carga al 60–70 %. Mantener el torso erguido y velocidad > 0,5 m/s.',
+            emoji: '🏋️'
+          },
+          {
+            name: 'Prensa de pierna unipodal',
+            setsReps: '3 × 6–8 por pierna',
+            instructions: 'Imitar el estudio de Vikmoen: prensa con una pierna. Monitorizar velocidad para evitar empujar lentamente.',
+            emoji: '🦿'
+          },
+          {
+            name: 'Step‑up sobre caja con rodilla alta',
+            setsReps: '2 × 8 por pierna',
+            instructions: 'Cargar con barra ligera o mancuerna. Subir rápidamente (1,0–1,2 m/s) y descender controlado.',
+            emoji: '📦'
+          },
+          {
+            name: 'Flexión de cadera con cinta/elástico',
+            setsReps: '2 × 10 por pierna',
+            instructions: 'Ejercicio de flexores de cadera. Ejecutar con alta velocidad para mejorar la acción de subida de rodilla.',
+            emoji: '🧘'
+          }
         ]
       },
-      2: {
-        1: [
-          { exercise: 'Media sentadilla en máquina Smith', sets: '4 × 4–6', instructions: '75–90 % 1RM; velocidad 0,3–0,5 m/s.' },
-          { exercise: 'Prensa de pierna unipodal', sets: '3 × 4–6', instructions: 'Carga pesada; espalda pegada; velocidad 0,3–0,5 m/s.' },
-          { exercise: 'Peso muerto rumano o hip thrust', sets: '3 × 4–6', instructions: 'Alternar ambas semanas; máxima activación de glúteos y control de velocidad.' },
-          { exercise: 'Elevación de talón sentado', sets: '3 × 8', instructions: 'Carga pesada; velocidad moderada.' }
+      'Fase 2 – Fuerza máxima': {
+        'Día 1': [
+          {
+            name: 'Media sentadilla en máquina Smith',
+            setsReps: '4 × 4–6',
+            instructions: 'Aumentar progresivamente de 75 % a 85–90 % 1RM. Monitorizar que la velocidad no baje de 0,3 m/s.',
+            emoji: '🏋️'
+          },
+          {
+            name: 'Prensa de pierna unipodal',
+            setsReps: '3 × 4–6',
+            instructions: 'Carga pesada. Mantener la espalda pegada al respaldo. Velocidad de 0,3–0,5 m/s.',
+            emoji: '🦿'
+          },
+          {
+            name: 'Peso muerto rumano o hip thrust',
+            setsReps: '3 × 4–6',
+            instructions: 'Alternar entre peso muerto rumano y hip thrust. Mantener la velocidad adecuada.',
+            emoji: '🍑'
+          },
+          {
+            name: 'Elevación de talón sentado',
+            setsReps: '3 × 8',
+            instructions: 'Carga pesada para fortalecer gemelos. Velocidad moderada.',
+            emoji: '🐐'
+          }
         ],
-        2: [
-          { exercise: 'Sentadilla trasera + salto (complex)', sets: '3 superseries', instructions: 'Serie pesada al 85 % 1RM seguida de 3–5 saltos con 20–30 % 1RM.' },
-          { exercise: 'Peso muerto rumano', sets: '3 × 5', instructions: 'Misma progresión de carga que Día 1.' },
-          { exercise: 'Step‑up lateral pesado', sets: '3 × 4–6 por pierna', instructions: 'Banco alto y barra en los hombros; velocidad 0,4–0,5 m/s.' },
-          { exercise: 'Flexión de cadera con resistencia', sets: '2 × 8–10 por pierna', instructions: 'Aumentar tensión de la banda; velocidad > 1 m/s.' }
+        'Día 2': [
+          {
+            name: 'Sentadilla trasera + salto (complex)',
+            setsReps: '3 superseries',
+            instructions: 'Realizar serie pesada (3–4 repeticiones al 85 % 1RM) seguida de 3–5 saltos con carga ligera (20–30 % 1RM).',
+            emoji: '🔁'
+          },
+          {
+            name: 'Peso muerto rumano',
+            setsReps: '3 × 5',
+            instructions: 'Mantener la misma progresión de carga que en Día 1.',
+            emoji: '🍑'
+          },
+          {
+            name: 'Step‑up lateral pesado',
+            setsReps: '3 × 4–6 por pierna',
+            instructions: 'Emplear banco más alto y barra sobre los hombros. Velocidad 0,4–0,5 m/s.',
+            emoji: '📦'
+          },
+          {
+            name: 'Flexión de cadera con resistencia',
+            setsReps: '2 × 8–10 por pierna',
+            instructions: 'Aumentar tensión del elástico. Ejecutar con velocidad alta (> 1 m/s).',
+            emoji: '🧘'
+          }
         ]
       },
-      3: {
-        1: [
-          { exercise: 'Sentadilla jump o squat jump con carga', sets: '4 × 4–6', instructions: '20–40 % 1RM; velocidad pico > 1,0 m/s; aterrizar suave.' },
-          { exercise: 'Peso muerto con trap bar de alta velocidad', sets: '3 × 4–5', instructions: '50–60 % 1RM; trabajar a 0,8–1,0 m/s.' },
-          { exercise: 'Desplantes pliométricos', sets: '3 × 6 por pierna', instructions: 'Saltar de zancada a zancada con peso ligero; velocidad alta.' },
-          { exercise: 'Sprint en cinta inclinada o pedaleo de alta cadencia', sets: '3 × 30 s', instructions: 'Recuperar 90 s; transferir la potencia a la carrera y ciclismo.' }
+      'Fase 3 – Potencia y velocidad': {
+        'Día 1': [
+          {
+            name: 'Sentadilla jump con carga',
+            setsReps: '4 × 4–6',
+            instructions: 'Utilizar 20–40 % 1RM. Monitorear que la velocidad pico supere 1,0 m/s. Aterrizar suave.',
+            emoji: '🚀'
+          },
+          {
+            name: 'Peso muerto con trap bar de alta velocidad',
+            setsReps: '3 × 4–5',
+            instructions: 'Trabajar con 50–60 % 1RM a velocidades de 0,8–1,0 m/s.',
+            emoji: '🔗'
+          },
+          {
+            name: 'Desplantes pliométricos',
+            setsReps: '3 × 6 por pierna',
+            instructions: 'Saltar de zancada a zancada con mancuernas ligeras o solo peso corporal.',
+            emoji: '🦘'
+          },
+          {
+            name: 'Sprint en cinta inclinada o pedaleo de alta cadencia',
+            setsReps: '3 × 30 s',
+            instructions: 'Realizar sprints inmediatamente después de los ejercicios para transferir la potencia a la carrera o al pedaleo.',
+            emoji: '🚴'
+          }
         ],
-        2: [
-          { exercise: 'Sentadilla búlgara con salto', sets: '3 × 5 por pierna', instructions: 'Mancuerna ligera (10–20 % 1RM); salto explosivo.' },
-          { exercise: 'Hip thrust explosivo', sets: '3 × 6', instructions: 'Banda elástica o peso moderado; velocidad > 1 m/s.' },
-          { exercise: 'Step‑up rápido con barra ligera', sets: '3 × 6–8 por pierna', instructions: 'Velocidad 1–1,3 m/s; énfasis en coordinación.' },
-          { exercise: 'Saltos en cajón o bounds', sets: '2 × 6–8', instructions: 'Pliometría pura; recuperar 1–2 min.' }
+        'Día 2': [
+          {
+            name: 'Sentadilla búlgara con salto',
+            setsReps: '3 × 5 por pierna',
+            instructions: 'Cargar con mancuerna ligera (10–20 % 1RM). Realizar salto explosivo manteniendo equilibrio.',
+            emoji: '🤸'
+          },
+          {
+            name: 'Hip thrust explosivo',
+            setsReps: '3 × 6',
+            instructions: 'Utilizar banda elástica o peso moderado. Elevar la cadera rápidamente con velocidad > 1 m/s.',
+            emoji: '🍑'
+          },
+          {
+            name: 'Step‑up rápido con barra ligera',
+            setsReps: '3 × 6–8 por pierna',
+            instructions: 'Enfocarse en velocidad y coordinación; medir con el encoder para mantener 1–1,3 m/s.',
+            emoji: '📦'
+          },
+          {
+            name: 'Saltos en cajón o bounds',
+            setsReps: '2 × 6–8',
+            instructions: 'Pliometría pura para mejorar la elasticidad tendinosa y la capacidad de producir fuerza rápidamente.',
+            emoji: '📥'
+          }
         ]
       }
     };
 
-    // Componente principal de la app
-    class App extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          workouts: [],
-          form: {
-            date: this.formatDate(new Date()),
-            exercise: '',
-            weight: '',
-            sets: '',
-            reps: '',
-            velocity: ''
-          },
-          // Fase (1, 2, 3) y día (1, 2) actuales para mostrar el plan correspondiente
-          currentPhase: 1,
-          currentDay: 1,
-          // Fecha de la sesión para registrar las entradas del plan
-          sessionDate: this.formatDate(new Date()),
-          // Pesos introducidos por el usuario para los ejercicios del plan
-          inputs: {}
+    /**
+     * Extrae un valor medio de repeticiones a partir de una cadena como "3 × 6–8"
+     * devolviendo el promedio de las cifras de repeticiones.
+     * Esto sirve para estimar el 1RM a partir del peso usado.
+     */
+    function parseAvgRep(setsReps) {
+      // Buscar coincidencias de números separados por una '×' y un rango opcional.
+      const match = setsReps.match(/\d+\s*[×xX]\s*(\d+)(?:[–-](\d+))?/);
+      if (!match) return 0;
+      const minRep = parseInt(match[1], 10);
+      const maxRep = match[2] ? parseInt(match[2], 10) : minRep;
+      return (minRep + maxRep) / 2;
+    }
+
+    /**
+     * Estima el 1RM según la fórmula de Epley: 1RM = peso / (1 - repeticiones × 0,025)
+     */
+    function predict1RM(weight, avgRep) {
+      if (!weight || !avgRep) return null;
+      const est = weight / (1 - avgRep * 0.025);
+      return Math.round(est * 10) / 10;
+    }
+
+    /**
+     * Obtiene los registros guardados del almacenamiento local.
+     * Estructura del registro: array de sesiones { date, phase, day, exercises: { name: peso, ... } }
+     */
+    function loadLogs() {
+      const raw = localStorage.getItem('legLogs');
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    /**
+     * Guarda los registros en el almacenamiento local.
+     */
+    function saveLogs(logs) {
+      localStorage.setItem('legLogs', JSON.stringify(logs));
+    }
+
+    /**
+     * Devuelve el último peso registrado para un ejercicio dado.
+     */
+    function getLastWeight(logs, exerciseName) {
+      // Recorrer los registros en orden inverso buscando el último registro que contenga el ejercicio.
+      for (let i = logs.length - 1; i >= 0; i--) {
+        const session = logs[i];
+        if (session.exercises && session.exercises[exerciseName]) {
+          return session.exercises[exerciseName];
+        }
+      }
+      return null;
+    }
+
+    /**
+     * Calcula la sugerencia de peso para el siguiente entrenamiento en función del último peso.
+     * Si no hay registro previo, devuelve cadena vacía.
+     */
+    function getSuggestion(logs, exerciseName) {
+      const last = getLastWeight(logs, exerciseName);
+      if (!last) return '';
+      return Math.round(last * 1.05 * 10) / 10; // incrementar 5 %
+    }
+
+    function App() {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const [selectedPhase, setSelectedPhase] = React.useState(Object.keys(plan)[0]);
+      const [selectedDay, setSelectedDay] = React.useState(Object.keys(plan[Object.keys(plan)[0]])[0]);
+      const [sessionDate, setSessionDate] = React.useState(todayStr);
+      const [logs, setLogs] = React.useState(loadLogs());
+      // currentWeights guarda el peso introducido por el usuario para cada ejercicio en la sesión actual
+      const [currentWeights, setCurrentWeights] = React.useState({});
+
+      // Actualiza currentWeights al introducir peso
+      const handleWeightChange = (exerciseName, value) => {
+        setCurrentWeights(prev => ({ ...prev, [exerciseName]: value }));
+      };
+
+      // Maneja el guardado de la sesión actual
+      const handleSaveSession = () => {
+        if (!sessionDate) return;
+        const newSession = {
+          date: sessionDate,
+          phase: selectedPhase,
+          day: selectedDay,
+          exercises: { ...currentWeights }
         };
-      }
-
-      componentDidMount() {
-        // Cargar entrenamientos guardados en localStorage
-        const stored = localStorage.getItem('workouts');
-        if (stored) {
-          try {
-            const workouts = JSON.parse(stored);
-            this.setState({ workouts }, () => this.renderCharts());
-          } catch (e) {
-            console.error('No se pudieron leer los entrenamientos almacenados');
-          }
-        }
-      }
-
-      formatDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
-
-      handleInputChange = (e) => {
-        const { name, value } = e.target;
-        this.setState({ form: { ...this.state.form, [name]: value } });
+        const newLogs = [...logs, newSession];
+        setLogs(newLogs);
+        saveLogs(newLogs);
+        // Limpia pesos introducidos tras guardar
+        setCurrentWeights({});
+        alert('Sesión guardada correctamente');
       };
 
-      addWorkout = (e) => {
-        e.preventDefault();
-        const { date, exercise, weight, sets, reps, velocity } = this.state.form;
-        if (!date || !exercise || !weight || !sets || !reps) {
-          alert('Por favor, completa todos los campos obligatorios.');
-          return;
-        }
-        const newRecord = {
-          id: Date.now(),
-          date,
-          exercise: exercise.trim(),
-          weight: parseFloat(weight),
-          sets: parseInt(sets, 10),
-          reps: parseInt(reps, 10),
-          velocity: velocity ? parseFloat(velocity) : null
-        };
-        const workouts = [...this.state.workouts, newRecord];
-        this.setState({ workouts, form: { ...this.state.form, exercise: '', weight: '', sets: '', reps: '', velocity: '' } }, () => {
-          localStorage.setItem('workouts', JSON.stringify(this.state.workouts));
-          this.renderCharts();
-        });
-      };
+      // Obtiene la lista de ejercicios según fase y día seleccionados
+      const exercises = plan[selectedPhase][selectedDay];
 
-      deleteWorkout = (id) => {
-        const workouts = this.state.workouts.filter((w) => w.id !== id);
-        this.setState({ workouts }, () => {
-          localStorage.setItem('workouts', JSON.stringify(workouts));
-          this.renderCharts();
-        });
-      };
-
-      // Cambiar la fase seleccionada
-      handlePhaseChange = (e) => {
-        const phase = parseInt(e.target.value, 10);
-        // Al cambiar la fase se reinician las entradas de pesos
-        this.setState({ currentPhase: phase, inputs: {} });
-      };
-
-      // Cambiar el día seleccionado
-      handleDayChange = (e) => {
-        const day = parseInt(e.target.value, 10);
-        // Al cambiar el día se reinician las entradas de pesos
-        this.setState({ currentDay: day, inputs: {} });
-      };
-
-      // Obtener la sugerencia de peso para un ejercicio concreto a partir del histórico
-      getExerciseSuggestion(exerciseName) {
-        const records = this.state.workouts.filter((r) => r.exercise === exerciseName);
-        if (!records.length) return '';
-        // Tomamos el peso máximo registrado para este ejercicio y proponemos un incremento del 5 %
-        const maxWeight = Math.max(...records.map((r) => r.weight));
-        return +(maxWeight * 1.05).toFixed(2);
-      }
-
-      // Gestionar el cambio de peso introducido para un ejercicio del plan
-      handleWeightInputChange = (exerciseName, value) => {
-        this.setState((prevState) => ({ inputs: { ...prevState.inputs, [exerciseName]: value } }));
-      };
-
-      // Guardar la sesión de entrenamiento planificada: crea registros para cada ejercicio con el peso introducido
-      saveSession = () => {
-        const { currentPhase, currentDay, sessionDate, inputs } = this.state;
-        const plan = PLAN[currentPhase] && PLAN[currentPhase][currentDay] ? PLAN[currentPhase][currentDay] : [];
-        const newRecords = [];
-        plan.forEach((item) => {
-          const weightStr = inputs[item.exercise];
-          if (weightStr && !isNaN(parseFloat(weightStr))) {
-            // intentar extraer series y repeticiones del campo 'sets' (p.ej. '3 × 6–8')
-            let setsNum = 0;
-            let repsNum = 0;
-            try {
-              const parts = item.sets.split('×');
-              setsNum = parseInt(parts[0]);
-              // Tomar la primera cifra de repeticiones como aproximación
-              const repPart = parts[1] || '';
-              // Reemplazar cualquier carácter no numérico excepto guion y rango
-              const match = repPart.match(/\d+/);
-              repsNum = match ? parseInt(match[0]) : 0;
-            } catch (err) {
-              setsNum = 0;
-              repsNum = 0;
-            }
-            newRecords.push({
-              id: Date.now() + newRecords.length,
-              date: sessionDate,
-              exercise: item.exercise,
-              weight: parseFloat(weightStr),
-              sets: setsNum,
-              reps: repsNum,
-              velocity: null
-            });
-          }
-        });
-        if (!newRecords.length) {
-          alert('No se introdujeron pesos válidos para registrar.');
-          return;
-        }
-        const workouts = [...this.state.workouts, ...newRecords];
-        this.setState({ workouts, inputs: {} }, () => {
-          localStorage.setItem('workouts', JSON.stringify(workouts));
-          this.renderCharts();
-          alert('Sesión guardada correctamente.');
-        });
-      };
-
-      // Agrupar datos por ejercicio para preparar gráficos y sugerencias
-      groupByExercise() {
-        const groups = {};
-        this.state.workouts.forEach((w) => {
-          if (!groups[w.exercise]) groups[w.exercise] = [];
-          groups[w.exercise].push(w);
-        });
-        return groups;
-      }
-
-      // Proponer nueva carga: incremento del 5 % sobre el peso máximo registrado
-      getSuggestions() {
-        const groups = this.groupByExercise();
-        const suggestions = {};
-        Object.keys(groups).forEach((ex) => {
-          const max = Math.max(...groups[ex].map((r) => r.weight));
-          const suggested = +(max * 1.05).toFixed(2);
-          suggestions[ex] = suggested;
-        });
-        return suggestions;
-      }
-
-      // Renderizar gráficos de evolución utilizando Chart.js
-      renderCharts() {
-        // Si no hay datos de entrenamiento o Chart no está disponible, no generar gráficos
-        if (!this.state.workouts || this.state.workouts.length === 0) return;
-        if (typeof Chart === 'undefined') return;
-        try {
-          // Borrar gráficos existentes y contenedores previos
-          Object.keys(Chart.instances || {}).forEach((key) => {
-            const chart = Chart.instances[key];
-            if (chart) chart.destroy();
-          });
-        } catch (err) {
-          // Chart.instances puede no estar definido en versiones modernas; ignorar
-        }
-        const chartsRoot = document.getElementById('charts-root');
-        if (chartsRoot) {
-          while (chartsRoot.firstChild) {
-            chartsRoot.removeChild(chartsRoot.firstChild);
-          }
-        }
-        const groups = this.groupByExercise();
-        Object.keys(groups).forEach((ex, index) => {
-          const data = groups[ex].sort((a, b) => new Date(a.date) - new Date(b.date));
-          const labels = data.map((d) => d.date);
-          const weights = data.map((d) => d.weight);
-          const canvasId = `chart-${index}`;
-          let canvas = document.getElementById(canvasId);
-          if (!canvas) {
-            const container = document.createElement('div');
-            container.className = 'chart-container';
-            const title = document.createElement('h3');
-            title.textContent = `Evolución de peso – ${ex}`;
-            canvas = document.createElement('canvas');
-            canvas.id = canvasId;
-            container.appendChild(title);
-            container.appendChild(canvas);
-            document.getElementById('charts-root').appendChild(container);
-          }
-          new Chart(canvas.getContext('2d'), {
-            type: 'line',
-            data: {
-              labels,
-              datasets: [{
-                label: `${ex} (kg)`,
-                data: weights,
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-              }]
-            },
-            options: {
-              responsive: true,
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: 'Fecha'
-                  }
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Peso (kg)'
-                  },
-                  beginAtZero: true
-                }
-              },
-              plugins: {
-                legend: {
-                  display: true
-                },
-                tooltip: {
-                  callbacks: {
-                    label: (context) => `${context.parsed.y} kg`
-                  }
-                }
-              }
-            }
-          });
-        });
-      }
-
-      render() {
-        const { date, exercise, weight, sets, reps, velocity } = this.state.form;
-        const suggestions = this.getSuggestions();
-        const { currentPhase, currentDay } = this.state;
-        const currentPlan = PLAN[currentPhase] && PLAN[currentPhase][currentDay] ? PLAN[currentPhase][currentDay] : [];
-        return (
-          <div>
-            {/* Sección para seleccionar fase y día y mostrar el plan */}
-            <div className="program-section">
-              <h2>Fase y día actuales</h2>
-              <div>
-                <label>Fase&nbsp;</label>
-                <select value={currentPhase} onChange={this.handlePhaseChange}>
-                  <option value="1">Fase 1 – Adaptación</option>
-                  <option value="2">Fase 2 – Fuerza máxima</option>
-                  <option value="3">Fase 3 – Potencia y velocidad</option>
-                </select>
-                <label>Día&nbsp;</label>
-                <select value={currentDay} onChange={this.handleDayChange}>
-                  <option value="1">Día 1</option>
-                  <option value="2">Día 2</option>
-                </select>
-              </div>
-              {currentPlan.length > 0 ? (
-                <div>
-                  {/* Fecha de la sesión */}
-                  <div className="mb-4">
-                    <label className="block font-bold mb-1">Fecha de la sesión</label>
-                    <input type="date" className="border rounded p-2" value={this.state.sessionDate} onChange={(e) => this.setState({ sessionDate: e.target.value })} />
-                  </div>
-                  <table className="min-w-full">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="px-3 py-2 text-left">Ejercicio</th>
-                        <th className="px-3 py-2 text-left">Series × rep.</th>
-                        <th className="px-3 py-2 text-left">Indicaciones</th>
-                        <th className="px-3 py-2 text-left">Sugerencia (kg)</th>
-                        <th className="px-3 py-2 text-left">Tu peso (kg)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentPlan.map((item) => (
-                        <tr key={item.exercise} className="border-b">
-                          <td className="px-3 py-2">{item.exercise}</td>
-                          <td className="px-3 py-2">{item.sets}</td>
-                          <td className="px-3 py-2">{item.instructions}</td>
-                          <td className="px-3 py-2">{this.getExerciseSuggestion(item.exercise)}</td>
-                          <td className="px-3 py-2">
-                            <input
-                              type="number"
-                              step="0.1"
-                              className="border rounded p-1 w-full"
-                              value={this.state.inputs[item.exercise] || ''}
-                              onChange={(e) => this.handleWeightInputChange(item.exercise, e.target.value)}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <button type="button" className="mt-4 bg-green-600 text-white px-4 py-2 rounded" onClick={this.saveSession}>Guardar sesión</button>
-                </div>
-              ) : (
-                <p>No se encontró un plan para la fase y día seleccionados.</p>
-              )}
+      return (
+        <div className="bg-white bg-opacity-70 rounded-lg shadow-xl p-6">
+          <h1 className="text-2xl font-bold mb-4 text-gray-800">Registro de Entrenamiento de Piernas</h1>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            {/* Selector de fase */}
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1 text-gray-700">Fase</label>
+              <select
+                className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedPhase}
+                onChange={e => {
+                  setSelectedPhase(e.target.value);
+                  // Ajustar día seleccionado al primero de la nueva fase
+                  const firstDay = Object.keys(plan[e.target.value])[0];
+                  setSelectedDay(firstDay);
+                }}
+              >
+                {Object.keys(plan).map(phase => (
+                  <option key={phase} value={phase}>{phase}</option>
+                ))}
+              </select>
             </div>
-            {/* Formulario de registro manual */}
-            <form onSubmit={this.addWorkout}>
-              <h2>Añadir entrenamiento</h2>
-              <div>
-                <label>Fecha</label>
-                <input type="date" name="date" value={date} onChange={this.handleInputChange} />
-              </div>
-              <div>
-                <label>Ejercicio</label>
-                <input type="text" name="exercise" placeholder="Sentadilla, prensa..." value={exercise} onChange={this.handleInputChange} />
-              </div>
-              <div>
-                <label>Peso (kg)</label>
-                <input type="number" name="weight" value={weight} onChange={this.handleInputChange} step="0.1" />
-              </div>
-              <div>
-                <label>Series</label>
-                <input type="number" name="sets" value={sets} onChange={this.handleInputChange} />
-              </div>
-              <div>
-                <label>Repeticiones</label>
-                <input type="number" name="reps" value={reps} onChange={this.handleInputChange} />
-              </div>
-              <div>
-                <label>Velocidad media (m/s) (opcional)</label>
-                <input type="number" name="velocity" value={velocity} onChange={this.handleInputChange} step="0.01" />
-              </div>
-              <button type="submit">Añadir</button>
-            </form>
-            {/* Tabla de entrenamientos */}
-            {this.state.workouts.length > 0 && (
-              <div>
-                <h2>Entrenamientos guardados</h2>
-                <table>
-                  <thead>
+            {/* Selector de día */}
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1 text-gray-700">Día</label>
+              <select
+                className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={selectedDay}
+                onChange={e => setSelectedDay(e.target.value)}
+              >
+                {Object.keys(plan[selectedPhase]).map(day => (
+                  <option key={day} value={day}>{day}</option>
+                ))}
+              </select>
+            </div>
+            {/* Selector de fecha */}
+            <div className="flex flex-col">
+              <label className="font-semibold mb-1 text-gray-700">Fecha de la sesión</label>
+              <input
+                type="date"
+                className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={sessionDate}
+                onChange={e => setSessionDate(e.target.value)}
+              />
+            </div>
+          </div>
+          {/* Tabla de ejercicios */}
+          <div className="overflow-x-auto mb-4">
+            <table className="min-w-full text-sm divide-y divide-gray-200">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  <th className="py-2 px-2">Ejercicio</th>
+                  <th className="py-2 px-2">Series × rep.</th>
+                  <th className="py-2 px-2">Indicaciones</th>
+                  <th className="py-2 px-2">Último peso (kg)</th>
+                  <th className="py-2 px-2">1RM estimado (kg)</th>
+                  <th className="py-2 px-2">Introduce tu peso (kg)</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {exercises.map(exercise => {
+                  const lastWeight = getLastWeight(logs, exercise.name);
+                  const avgRep = parseAvgRep(exercise.setsReps);
+                  const last1RM = lastWeight ? predict1RM(lastWeight, avgRep) : '';
+                  const suggestion = getSuggestion(logs, exercise.name);
+                  return (
+                    <tr key={exercise.name} className="hover:bg-blue-50">
+                      <td className="py-2 px-2 whitespace-nowrap font-medium flex items-center space-x-2">
+                        <span className="text-xl">{exercise.emoji}</span>
+                        <span>{exercise.name}</span>
+                      </td>
+                      <td className="py-2 px-2 whitespace-nowrap">{exercise.setsReps}</td>
+                      <td className="py-2 px-2">{exercise.instructions}</td>
+                      <td className="py-2 px-2 text-center">{lastWeight ?? '-'}</td>
+                      <td className="py-2 px-2 text-center">{last1RM ?? '-'}</td>
+                      <td className="py-2 px-2">
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.5"
+                            className="w-24 p-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder={suggestion || '0'}
+                            value={currentWeights[exercise.name] || ''}
+                            onChange={e => handleWeightChange(exercise.name, parseFloat(e.target.value))}
+                          />
+                          {suggestion && (
+                            <span className="text-xs text-gray-500">(sug: {suggestion})</span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+            onClick={handleSaveSession}
+          >
+            Guardar sesión
+          </button>
+          {/* Historial de sesiones */}
+          <div className="mt-8">
+            <h2 className="text-xl font-semibold mb-2 text-gray-800">Historial de sesiones</h2>
+            {logs.length === 0 ? (
+              <p className="text-gray-600">No hay sesiones registradas.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm divide-y divide-gray-200">
+                  <thead className="bg-gray-100 text-gray-700">
                     <tr>
-                      <th>Fecha</th>
-                      <th>Ejercicio</th>
-                      <th>Peso (kg)</th>
-                      <th>Series</th>
-                      <th>Reps</th>
-                      <th>Velocidad (m/s)</th>
-                      <th></th>
+                      <th className="py-2 px-2">Fecha</th>
+                      <th className="py-2 px-2">Fase</th>
+                      <th className="py-2 px-2">Día</th>
+                      <th className="py-2 px-2">Ejercicios y pesos</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {this.state.workouts
-                      .sort((a, b) => new Date(a.date) - new Date(b.date))
-                      .map((record) => (
-                        <tr key={record.id}>
-                          <td>{record.date}</td>
-                          <td>{record.exercise}</td>
-                          <td>{record.weight}</td>
-                          <td>{record.sets}</td>
-                          <td>{record.reps}</td>
-                          <td>{record.velocity ? record.velocity.toFixed(2) : '-'}</td>
-                          <td><button className="delete" onClick={() => this.deleteWorkout(record.id)}>Eliminar</button></td>
-                        </tr>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {logs.map((session, idx) => (
+                      <tr key={idx}>
+                        <td className="py-2 px-2 whitespace-nowrap">{session.date}</td>
+                        <td className="py-2 px-2 whitespace-nowrap">{session.phase}</td>
+                        <td className="py-2 px-2 whitespace-nowrap">{session.day}</td>
+                        <td className="py-2 px-2">
+                          {Object.entries(session.exercises).map(([ex, wt]) => (
+                            <div key={ex} className="flex items-center space-x-1">
+                              <span className="font-semibold">{ex}:</span>
+                              <span>{wt || '-'} kg</span>
+                            </div>
+                          ))}
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             )}
-            {/* Propuestas de carga */}
-            {Object.keys(suggestions).length > 0 && (
-              <div className="suggestions">
-                <h2>Propuesta de carga para la próxima sesión</h2>
-                <ul>
-                  {Object.keys(suggestions).map((ex) => (
-                    <li key={ex}><strong>{ex}:</strong> {suggestions[ex]} kg</li>
-                  ))}
-                </ul>
-                <p>La propuesta se calcula como un 5 % adicional sobre el peso máximo registrado para cada ejercicio.</p>
-              </div>
-            )}
-            {/* Contenedor para gráficos */}
-            <div id="charts-root"></div>
           </div>
-        );
-      }
+        </div>
+      );
     }
 
     ReactDOM.render(<App />, document.getElementById('root'));
