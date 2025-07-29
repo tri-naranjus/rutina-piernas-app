@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Entrenamiento de Piernas</title>
+  <!-- Import React y Chart.js desde CDN -->
+  <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+  <!-- Babel permite escribir JSX directamente en este archivo -->
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Tailwind CSS para una interfaz visual moderna -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f7f7f7;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    form div {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 8px 12px;
+      margin-right: 5px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button.delete {
+      background-color: #dc3545;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    .chart-container {
+      margin-top: 30px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .suggestions {
+      margin-top: 30px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Sección de programa de entrenamiento */
+    .program-section {
+      margin-top: 30px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .program-section h2 {
+      margin-top: 0;
+    }
+    .program-section select {
+      padding: 6px;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+    .program-section table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+    .program-section th, .program-section td {
+      padding: 6px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Registro de Entrenamiento de Piernas</h1>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    /*
+      Aplicación web para registrar entrenamientos de pierna y visualizar
+      la progresión. Incluye un plan predefinido de tres fases (adaptación,
+      fuerza máxima y potencia/velocidad) con dos días de entrenamiento cada
+      semana. Permite seleccionar la fase y el día para consultar los
+      ejercicios recomendados y registrar tus sesiones. La información se
+      guarda en localStorage y se visualiza en tablas y gráficos. Además,
+      propone una carga sugerida para la próxima sesión incrementando un 5 %
+      el peso máximo registrado para cada ejercicio.
+    */
+
+    // Plan de entrenamiento estructurado por fases y días. Cada entrada contiene
+    // el nombre del ejercicio, el número de series y repeticiones, y una
+    // descripción breve de la indicación o progresión.
+    const PLAN = {
+      1: {
+        1: [
+          { exercise: 'Sentadilla trasera/Smith', sets: '3 × 6–8', instructions: 'Carga al 60–70 % 1RM. Mantener la velocidad > 0,5 m/s y profundidad controlada.' },
+          { exercise: 'Peso muerto rumano', sets: '3 × 6–8', instructions: 'Énfasis en isquiotibiales y glúteos. Espalda neutra y movimiento explosivo.' },
+          { exercise: 'Zancadas caminando', sets: '2 × 8 por pierna', instructions: 'Utilizar mancuernas ligeras. Subir rápido (> 0,8 m/s) y descender controlado.' },
+          { exercise: 'Elevaciones de talón (gemelos)', sets: '3 × 10–12', instructions: 'Carga moderada; foco en la explosividad del ascenso.' }
+        ],
+        2: [
+          { exercise: 'Sentadilla frontal', sets: '3 × 6–8', instructions: 'Carga al 60–70 %. Torso erguido y velocidad > 0,5 m/s.' },
+          { exercise: 'Prensa de pierna unipodal', sets: '3 × 6–8 por pierna', instructions: 'Monitorizar la velocidad para evitar empujar lentamente.' },
+          { exercise: 'Step‑up sobre caja con rodilla alta', sets: '2 × 8 por pierna', instructions: 'Subir rápidamente (1,0–1,2 m/s) y descender controlado.' },
+          { exercise: 'Flexión de cadera con banda/elástico', sets: '2 × 10 por pierna', instructions: 'Alta velocidad; mejora la subida de rodilla en carrera y ciclismo.' }
+        ]
+      },
+      2: {
+        1: [
+          { exercise: 'Media sentadilla en máquina Smith', sets: '4 × 4–6', instructions: '75–90 % 1RM; velocidad 0,3–0,5 m/s.' },
+          { exercise: 'Prensa de pierna unipodal', sets: '3 × 4–6', instructions: 'Carga pesada; espalda pegada; velocidad 0,3–0,5 m/s.' },
+          { exercise: 'Peso muerto rumano o hip thrust', sets: '3 × 4–6', instructions: 'Alternar ambas semanas; máxima activación de glúteos y control de velocidad.' },
+          { exercise: 'Elevación de talón sentado', sets: '3 × 8', instructions: 'Carga pesada; velocidad moderada.' }
+        ],
+        2: [
+          { exercise: 'Sentadilla trasera + salto (complex)', sets: '3 superseries', instructions: 'Serie pesada al 85 % 1RM seguida de 3–5 saltos con 20–30 % 1RM.' },
+          { exercise: 'Peso muerto rumano', sets: '3 × 5', instructions: 'Misma progresión de carga que Día 1.' },
+          { exercise: 'Step‑up lateral pesado', sets: '3 × 4–6 por pierna', instructions: 'Banco alto y barra en los hombros; velocidad 0,4–0,5 m/s.' },
+          { exercise: 'Flexión de cadera con resistencia', sets: '2 × 8–10 por pierna', instructions: 'Aumentar tensión de la banda; velocidad > 1 m/s.' }
+        ]
+      },
+      3: {
+        1: [
+          { exercise: 'Sentadilla jump o squat jump con carga', sets: '4 × 4–6', instructions: '20–40 % 1RM; velocidad pico > 1,0 m/s; aterrizar suave.' },
+          { exercise: 'Peso muerto con trap bar de alta velocidad', sets: '3 × 4–5', instructions: '50–60 % 1RM; trabajar a 0,8–1,0 m/s.' },
+          { exercise: 'Desplantes pliométricos', sets: '3 × 6 por pierna', instructions: 'Saltar de zancada a zancada con peso ligero; velocidad alta.' },
+          { exercise: 'Sprint en cinta inclinada o pedaleo de alta cadencia', sets: '3 × 30 s', instructions: 'Recuperar 90 s; transferir la potencia a la carrera y ciclismo.' }
+        ],
+        2: [
+          { exercise: 'Sentadilla búlgara con salto', sets: '3 × 5 por pierna', instructions: 'Mancuerna ligera (10–20 % 1RM); salto explosivo.' },
+          { exercise: 'Hip thrust explosivo', sets: '3 × 6', instructions: 'Banda elástica o peso moderado; velocidad > 1 m/s.' },
+          { exercise: 'Step‑up rápido con barra ligera', sets: '3 × 6–8 por pierna', instructions: 'Velocidad 1–1,3 m/s; énfasis en coordinación.' },
+          { exercise: 'Saltos en cajón o bounds', sets: '2 × 6–8', instructions: 'Pliometría pura; recuperar 1–2 min.' }
+        ]
+      }
+    };
+
+    // Componente principal de la app
+    class App extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          workouts: [],
+          form: {
+            date: this.formatDate(new Date()),
+            exercise: '',
+            weight: '',
+            sets: '',
+            reps: '',
+            velocity: ''
+          },
+          // Fase (1, 2, 3) y día (1, 2) actuales para mostrar el plan correspondiente
+          currentPhase: 1,
+          currentDay: 1,
+          // Fecha de la sesión para registrar las entradas del plan
+          sessionDate: this.formatDate(new Date()),
+          // Pesos introducidos por el usuario para los ejercicios del plan
+          inputs: {}
+        };
+      }
+
+      componentDidMount() {
+        // Cargar entrenamientos guardados en localStorage
+        const stored = localStorage.getItem('workouts');
+        if (stored) {
+          try {
+            const workouts = JSON.parse(stored);
+            this.setState({ workouts }, () => this.renderCharts());
+          } catch (e) {
+            console.error('No se pudieron leer los entrenamientos almacenados');
+          }
+        }
+      }
+
+      formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      handleInputChange = (e) => {
+        const { name, value } = e.target;
+        this.setState({ form: { ...this.state.form, [name]: value } });
+      };
+
+      addWorkout = (e) => {
+        e.preventDefault();
+        const { date, exercise, weight, sets, reps, velocity } = this.state.form;
+        if (!date || !exercise || !weight || !sets || !reps) {
+          alert('Por favor, completa todos los campos obligatorios.');
+          return;
+        }
+        const newRecord = {
+          id: Date.now(),
+          date,
+          exercise: exercise.trim(),
+          weight: parseFloat(weight),
+          sets: parseInt(sets, 10),
+          reps: parseInt(reps, 10),
+          velocity: velocity ? parseFloat(velocity) : null
+        };
+        const workouts = [...this.state.workouts, newRecord];
+        this.setState({ workouts, form: { ...this.state.form, exercise: '', weight: '', sets: '', reps: '', velocity: '' } }, () => {
+          localStorage.setItem('workouts', JSON.stringify(this.state.workouts));
+          this.renderCharts();
+        });
+      };
+
+      deleteWorkout = (id) => {
+        const workouts = this.state.workouts.filter((w) => w.id !== id);
+        this.setState({ workouts }, () => {
+          localStorage.setItem('workouts', JSON.stringify(workouts));
+          this.renderCharts();
+        });
+      };
+
+      // Cambiar la fase seleccionada
+      handlePhaseChange = (e) => {
+        const phase = parseInt(e.target.value, 10);
+        // Al cambiar la fase se reinician las entradas de pesos
+        this.setState({ currentPhase: phase, inputs: {} });
+      };
+
+      // Cambiar el día seleccionado
+      handleDayChange = (e) => {
+        const day = parseInt(e.target.value, 10);
+        // Al cambiar el día se reinician las entradas de pesos
+        this.setState({ currentDay: day, inputs: {} });
+      };
+
+      // Obtener la sugerencia de peso para un ejercicio concreto a partir del histórico
+      getExerciseSuggestion(exerciseName) {
+        const records = this.state.workouts.filter((r) => r.exercise === exerciseName);
+        if (!records.length) return '';
+        // Tomamos el peso máximo registrado para este ejercicio y proponemos un incremento del 5 %
+        const maxWeight = Math.max(...records.map((r) => r.weight));
+        return +(maxWeight * 1.05).toFixed(2);
+      }
+
+      // Gestionar el cambio de peso introducido para un ejercicio del plan
+      handleWeightInputChange = (exerciseName, value) => {
+        this.setState((prevState) => ({ inputs: { ...prevState.inputs, [exerciseName]: value } }));
+      };
+
+      // Guardar la sesión de entrenamiento planificada: crea registros para cada ejercicio con el peso introducido
+      saveSession = () => {
+        const { currentPhase, currentDay, sessionDate, inputs } = this.state;
+        const plan = PLAN[currentPhase] && PLAN[currentPhase][currentDay] ? PLAN[currentPhase][currentDay] : [];
+        const newRecords = [];
+        plan.forEach((item) => {
+          const weightStr = inputs[item.exercise];
+          if (weightStr && !isNaN(parseFloat(weightStr))) {
+            // intentar extraer series y repeticiones del campo 'sets' (p.ej. '3 × 6–8')
+            let setsNum = 0;
+            let repsNum = 0;
+            try {
+              const parts = item.sets.split('×');
+              setsNum = parseInt(parts[0]);
+              // Tomar la primera cifra de repeticiones como aproximación
+              const repPart = parts[1] || '';
+              // Reemplazar cualquier carácter no numérico excepto guion y rango
+              const match = repPart.match(/\d+/);
+              repsNum = match ? parseInt(match[0]) : 0;
+            } catch (err) {
+              setsNum = 0;
+              repsNum = 0;
+            }
+            newRecords.push({
+              id: Date.now() + newRecords.length,
+              date: sessionDate,
+              exercise: item.exercise,
+              weight: parseFloat(weightStr),
+              sets: setsNum,
+              reps: repsNum,
+              velocity: null
+            });
+          }
+        });
+        if (!newRecords.length) {
+          alert('No se introdujeron pesos válidos para registrar.');
+          return;
+        }
+        const workouts = [...this.state.workouts, ...newRecords];
+        this.setState({ workouts, inputs: {} }, () => {
+          localStorage.setItem('workouts', JSON.stringify(workouts));
+          this.renderCharts();
+          alert('Sesión guardada correctamente.');
+        });
+      };
+
+      // Agrupar datos por ejercicio para preparar gráficos y sugerencias
+      groupByExercise() {
+        const groups = {};
+        this.state.workouts.forEach((w) => {
+          if (!groups[w.exercise]) groups[w.exercise] = [];
+          groups[w.exercise].push(w);
+        });
+        return groups;
+      }
+
+      // Proponer nueva carga: incremento del 5 % sobre el peso máximo registrado
+      getSuggestions() {
+        const groups = this.groupByExercise();
+        const suggestions = {};
+        Object.keys(groups).forEach((ex) => {
+          const max = Math.max(...groups[ex].map((r) => r.weight));
+          const suggested = +(max * 1.05).toFixed(2);
+          suggestions[ex] = suggested;
+        });
+        return suggestions;
+      }
+
+      // Renderizar gráficos de evolución utilizando Chart.js
+      renderCharts() {
+        // Si no hay datos de entrenamiento o Chart no está disponible, no generar gráficos
+        if (!this.state.workouts || this.state.workouts.length === 0) return;
+        if (typeof Chart === 'undefined') return;
+        try {
+          // Borrar gráficos existentes y contenedores previos
+          Object.keys(Chart.instances || {}).forEach((key) => {
+            const chart = Chart.instances[key];
+            if (chart) chart.destroy();
+          });
+        } catch (err) {
+          // Chart.instances puede no estar definido en versiones modernas; ignorar
+        }
+        const chartsRoot = document.getElementById('charts-root');
+        if (chartsRoot) {
+          while (chartsRoot.firstChild) {
+            chartsRoot.removeChild(chartsRoot.firstChild);
+          }
+        }
+        const groups = this.groupByExercise();
+        Object.keys(groups).forEach((ex, index) => {
+          const data = groups[ex].sort((a, b) => new Date(a.date) - new Date(b.date));
+          const labels = data.map((d) => d.date);
+          const weights = data.map((d) => d.weight);
+          const canvasId = `chart-${index}`;
+          let canvas = document.getElementById(canvasId);
+          if (!canvas) {
+            const container = document.createElement('div');
+            container.className = 'chart-container';
+            const title = document.createElement('h3');
+            title.textContent = `Evolución de peso – ${ex}`;
+            canvas = document.createElement('canvas');
+            canvas.id = canvasId;
+            container.appendChild(title);
+            container.appendChild(canvas);
+            document.getElementById('charts-root').appendChild(container);
+          }
+          new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [{
+                label: `${ex} (kg)`,
+                data: weights,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Fecha'
+                  }
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Peso (kg)'
+                  },
+                  beginAtZero: true
+                }
+              },
+              plugins: {
+                legend: {
+                  display: true
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (context) => `${context.parsed.y} kg`
+                  }
+                }
+              }
+            }
+          });
+        });
+      }
+
+      render() {
+        const { date, exercise, weight, sets, reps, velocity } = this.state.form;
+        const suggestions = this.getSuggestions();
+        const { currentPhase, currentDay } = this.state;
+        const currentPlan = PLAN[currentPhase] && PLAN[currentPhase][currentDay] ? PLAN[currentPhase][currentDay] : [];
+        return (
+          <div>
+            {/* Sección para seleccionar fase y día y mostrar el plan */}
+            <div className="program-section">
+              <h2>Fase y día actuales</h2>
+              <div>
+                <label>Fase&nbsp;</label>
+                <select value={currentPhase} onChange={this.handlePhaseChange}>
+                  <option value="1">Fase 1 – Adaptación</option>
+                  <option value="2">Fase 2 – Fuerza máxima</option>
+                  <option value="3">Fase 3 – Potencia y velocidad</option>
+                </select>
+                <label>Día&nbsp;</label>
+                <select value={currentDay} onChange={this.handleDayChange}>
+                  <option value="1">Día 1</option>
+                  <option value="2">Día 2</option>
+                </select>
+              </div>
+              {currentPlan.length > 0 ? (
+                <div>
+                  {/* Fecha de la sesión */}
+                  <div className="mb-4">
+                    <label className="block font-bold mb-1">Fecha de la sesión</label>
+                    <input type="date" className="border rounded p-2" value={this.state.sessionDate} onChange={(e) => this.setState({ sessionDate: e.target.value })} />
+                  </div>
+                  <table className="min-w-full">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="px-3 py-2 text-left">Ejercicio</th>
+                        <th className="px-3 py-2 text-left">Series × rep.</th>
+                        <th className="px-3 py-2 text-left">Indicaciones</th>
+                        <th className="px-3 py-2 text-left">Sugerencia (kg)</th>
+                        <th className="px-3 py-2 text-left">Tu peso (kg)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentPlan.map((item) => (
+                        <tr key={item.exercise} className="border-b">
+                          <td className="px-3 py-2">{item.exercise}</td>
+                          <td className="px-3 py-2">{item.sets}</td>
+                          <td className="px-3 py-2">{item.instructions}</td>
+                          <td className="px-3 py-2">{this.getExerciseSuggestion(item.exercise)}</td>
+                          <td className="px-3 py-2">
+                            <input
+                              type="number"
+                              step="0.1"
+                              className="border rounded p-1 w-full"
+                              value={this.state.inputs[item.exercise] || ''}
+                              onChange={(e) => this.handleWeightInputChange(item.exercise, e.target.value)}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <button type="button" className="mt-4 bg-green-600 text-white px-4 py-2 rounded" onClick={this.saveSession}>Guardar sesión</button>
+                </div>
+              ) : (
+                <p>No se encontró un plan para la fase y día seleccionados.</p>
+              )}
+            </div>
+            {/* Formulario de registro manual */}
+            <form onSubmit={this.addWorkout}>
+              <h2>Añadir entrenamiento</h2>
+              <div>
+                <label>Fecha</label>
+                <input type="date" name="date" value={date} onChange={this.handleInputChange} />
+              </div>
+              <div>
+                <label>Ejercicio</label>
+                <input type="text" name="exercise" placeholder="Sentadilla, prensa..." value={exercise} onChange={this.handleInputChange} />
+              </div>
+              <div>
+                <label>Peso (kg)</label>
+                <input type="number" name="weight" value={weight} onChange={this.handleInputChange} step="0.1" />
+              </div>
+              <div>
+                <label>Series</label>
+                <input type="number" name="sets" value={sets} onChange={this.handleInputChange} />
+              </div>
+              <div>
+                <label>Repeticiones</label>
+                <input type="number" name="reps" value={reps} onChange={this.handleInputChange} />
+              </div>
+              <div>
+                <label>Velocidad media (m/s) (opcional)</label>
+                <input type="number" name="velocity" value={velocity} onChange={this.handleInputChange} step="0.01" />
+              </div>
+              <button type="submit">Añadir</button>
+            </form>
+            {/* Tabla de entrenamientos */}
+            {this.state.workouts.length > 0 && (
+              <div>
+                <h2>Entrenamientos guardados</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Ejercicio</th>
+                      <th>Peso (kg)</th>
+                      <th>Series</th>
+                      <th>Reps</th>
+                      <th>Velocidad (m/s)</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.workouts
+                      .sort((a, b) => new Date(a.date) - new Date(b.date))
+                      .map((record) => (
+                        <tr key={record.id}>
+                          <td>{record.date}</td>
+                          <td>{record.exercise}</td>
+                          <td>{record.weight}</td>
+                          <td>{record.sets}</td>
+                          <td>{record.reps}</td>
+                          <td>{record.velocity ? record.velocity.toFixed(2) : '-'}</td>
+                          <td><button className="delete" onClick={() => this.deleteWorkout(record.id)}>Eliminar</button></td>
+                        </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {/* Propuestas de carga */}
+            {Object.keys(suggestions).length > 0 && (
+              <div className="suggestions">
+                <h2>Propuesta de carga para la próxima sesión</h2>
+                <ul>
+                  {Object.keys(suggestions).map((ex) => (
+                    <li key={ex}><strong>{ex}:</strong> {suggestions[ex]} kg</li>
+                  ))}
+                </ul>
+                <p>La propuesta se calcula como un 5 % adicional sobre el peso máximo registrado para cada ejercicio.</p>
+              </div>
+            )}
+            {/* Contenedor para gráficos */}
+            <div id="charts-root"></div>
+          </div>
+        );
+      }
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
