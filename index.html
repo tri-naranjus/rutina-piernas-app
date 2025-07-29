@@ -6,191 +6,59 @@
   <title>Registro de Entrenamiento de Piernas</title>
   <!-- Tailwind CSS via CDN for rapid styling -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React and ReactDOM via CDN -->
-  <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-  <!-- Babel to enable JSX in the browser -->
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <!-- Chart.js for future graph functionality (optional) -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
 </head>
 <body class="bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 min-h-screen flex justify-center p-4">
-  <div id="root" class="w-full max-w-5xl"></div>
-  <<script type="text/babel" data-presets="env,react">
-    // Plan definition: phases, days and exercises with sets, reps and instructions.
-    // Each exercise also has an emoji to make the UI more friendly.
+  <div id="app" class="w-full max-w-5xl"></div>
+
+  <script>
+    // Datos de plan de entrenamiento: fases, días y ejercicios
     const plan = {
       'Fase 1 – Adaptación': {
         'Día 1': [
-          {
-            name: 'Sentadilla trasera/Smith',
-            setsReps: '3 × 6–8',
-            instructions: 'Carga al 60–70 % 1RM. Mantener la velocidad > 0,5 m/s y la profundidad controlada.',
-            emoji: '🏋️'
-          },
-          {
-            name: 'Peso muerto rumano',
-            setsReps: '3 × 6–8',
-            instructions: 'Énfasis en isquiotibiales y glúteos. Espalda neutra y movimiento explosivo.',
-            emoji: '🦵'
-          },
-          {
-            name: 'Zancadas caminando',
-            setsReps: '2 × 8 por pierna',
-            instructions: 'Utilizar mancuernas ligeras. Subir rápido (> 0,8 m/s) y descender controlado.',
-            emoji: '🚶'
-          },
-          {
-            name: 'Elevaciones de talón (gemelos)',
-            setsReps: '3 × 10–12',
-            instructions: 'Carga moderada; foco en la explosividad del ascenso.',
-            emoji: '🐐'
-          }
+          { name: 'Sentadilla trasera/Smith', setsReps: '3 × 6–8', instructions: 'Carga al 60–70 % 1RM. Mantener la velocidad > 0,5 m/s y la profundidad controlada.', emoji: '🏋️' },
+          { name: 'Peso muerto rumano', setsReps: '3 × 6–8', instructions: 'Énfasis en isquiotibiales y glúteos. Espalda neutra y movimiento explosivo.', emoji: '🦵' },
+          { name: 'Zancadas caminando', setsReps: '2 × 8 por pierna', instructions: 'Utilizar mancuernas ligeras. Subir rápido (> 0,8 m/s) y descender controlado.', emoji: '🚶' },
+          { name: 'Elevaciones de talón (gemelos)', setsReps: '3 × 10–12', instructions: 'Carga moderada; foco en la explosividad del ascenso.', emoji: '🐐' }
         ],
         'Día 2': [
-          {
-            name: 'Sentadilla frontal (barra o kettlebell)',
-            setsReps: '3 × 6–8',
-            instructions: 'Carga al 60–70 %. Mantener el torso erguido y velocidad > 0,5 m/s.',
-            emoji: '🏋️'
-          },
-          {
-            name: 'Prensa de pierna unipodal',
-            setsReps: '3 × 6–8 por pierna',
-            instructions: 'Imitar el estudio de Vikmoen: prensa con una pierna. Monitorizar velocidad para evitar empujar lentamente.',
-            emoji: '🦿'
-          },
-          {
-            name: 'Step‑up sobre caja con rodilla alta',
-            setsReps: '2 × 8 por pierna',
-            instructions: 'Cargar con barra ligera o mancuerna. Subir rápidamente (1,0–1,2 m/s) y descender controlado.',
-            emoji: '📦'
-          },
-          {
-            name: 'Flexión de cadera con cinta/elástico',
-            setsReps: '2 × 10 por pierna',
-            instructions: 'Ejercicio de flexores de cadera. Ejecutar con alta velocidad para mejorar la acción de subida de rodilla.',
-            emoji: '🧘'
-          }
+          { name: 'Sentadilla frontal (barra o kettlebell)', setsReps: '3 × 6–8', instructions: 'Carga al 60–70 %. Mantener el torso erguido y velocidad > 0,5 m/s.', emoji: '🏋️' },
+          { name: 'Prensa de pierna unipodal', setsReps: '3 × 6–8 por pierna', instructions: 'Imitar el estudio de Vikmoen: prensa con una pierna. Monitorizar velocidad para evitar empujar lentamente.', emoji: '🦿' },
+          { name: 'Step‑up sobre caja con rodilla alta', setsReps: '2 × 8 por pierna', instructions: 'Cargar con barra ligera o mancuerna. Subir rápidamente (1,0–1,2 m/s) y descender controlado.', emoji: '📦' },
+          { name: 'Flexión de cadera con cinta/elástico', setsReps: '2 × 10 por pierna', instructions: 'Ejercicio de flexores de cadera. Ejecutar con alta velocidad para mejorar la acción de subida de rodilla.', emoji: '🧘' }
         ]
       },
       'Fase 2 – Fuerza máxima': {
         'Día 1': [
-          {
-            name: 'Media sentadilla en máquina Smith',
-            setsReps: '4 × 4–6',
-            instructions: 'Aumentar progresivamente de 75 % a 85–90 % 1RM. Monitorizar que la velocidad no baje de 0,3 m/s.',
-            emoji: '🏋️'
-          },
-          {
-            name: 'Prensa de pierna unipodal',
-            setsReps: '3 × 4–6',
-            instructions: 'Carga pesada. Mantener la espalda pegada al respaldo. Velocidad de 0,3–0,5 m/s.',
-            emoji: '🦿'
-          },
-          {
-            name: 'Peso muerto rumano o hip thrust',
-            setsReps: '3 × 4–6',
-            instructions: 'Alternar entre peso muerto rumano y hip thrust. Mantener la velocidad adecuada.',
-            emoji: '🍑'
-          },
-          {
-            name: 'Elevación de talón sentado',
-            setsReps: '3 × 8',
-            instructions: 'Carga pesada para fortalecer gemelos. Velocidad moderada.',
-            emoji: '🐐'
-          }
+          { name: 'Media sentadilla en máquina Smith', setsReps: '4 × 4–6', instructions: 'Aumentar progresivamente de 75 % a 85–90 % 1RM. Monitorizar que la velocidad no baje de 0,3 m/s.', emoji: '🏋️' },
+          { name: 'Prensa de pierna unipodal', setsReps: '3 × 4–6', instructions: 'Carga pesada. Mantener la espalda pegada al respaldo. Velocidad de 0,3–0,5 m/s.', emoji: '🦿' },
+          { name: 'Peso muerto rumano o hip thrust', setsReps: '3 × 4–6', instructions: 'Alternar entre peso muerto rumano y hip thrust. Mantener la velocidad adecuada.', emoji: '🍑' },
+          { name: 'Elevación de talón sentado', setsReps: '3 × 8', instructions: 'Carga pesada para fortalecer gemelos. Velocidad moderada.', emoji: '🐐' }
         ],
         'Día 2': [
-          {
-            name: 'Sentadilla trasera + salto (complex)',
-            setsReps: '3 superseries',
-            instructions: 'Realizar serie pesada (3–4 repeticiones al 85 % 1RM) seguida de 3–5 saltos con carga ligera (20–30 % 1RM).',
-            emoji: '🔁'
-          },
-          {
-            name: 'Peso muerto rumano',
-            setsReps: '3 × 5',
-            instructions: 'Mantener la misma progresión de carga que en Día 1.',
-            emoji: '🍑'
-          },
-          {
-            name: 'Step‑up lateral pesado',
-            setsReps: '3 × 4–6 por pierna',
-            instructions: 'Emplear banco más alto y barra sobre los hombros. Velocidad 0,4–0,5 m/s.',
-            emoji: '📦'
-          },
-          {
-            name: 'Flexión de cadera con resistencia',
-            setsReps: '2 × 8–10 por pierna',
-            instructions: 'Aumentar tensión del elástico. Ejecutar con velocidad alta (> 1 m/s).',
-            emoji: '🧘'
-          }
+          { name: 'Sentadilla trasera + salto (complex)', setsReps: '3 superseries', instructions: 'Realizar serie pesada (3–4 repeticiones al 85 % 1RM) seguida de 3–5 saltos con carga ligera (20–30 % 1RM).', emoji: '🔁' },
+          { name: 'Peso muerto rumano', setsReps: '3 × 5', instructions: 'Mantener la misma progresión de carga que en Día 1.', emoji: '🍑' },
+          { name: 'Step‑up lateral pesado', setsReps: '3 × 4–6 por pierna', instructions: 'Emplear banco más alto y barra sobre los hombros. Velocidad 0,4–0,5 m/s.', emoji: '📦' },
+          { name: 'Flexión de cadera con resistencia', setsReps: '2 × 8–10 por pierna', instructions: 'Aumentar tensión del elástico. Ejecutar con velocidad alta (> 1 m/s).', emoji: '🧘' }
         ]
       },
       'Fase 3 – Potencia y velocidad': {
         'Día 1': [
-          {
-            name: 'Sentadilla jump con carga',
-            setsReps: '4 × 4–6',
-            instructions: 'Utilizar 20–40 % 1RM. Monitorear que la velocidad pico supere 1,0 m/s. Aterrizar suave.',
-            emoji: '🚀'
-          },
-          {
-            name: 'Peso muerto con trap bar de alta velocidad',
-            setsReps: '3 × 4–5',
-            instructions: 'Trabajar con 50–60 % 1RM a velocidades de 0,8–1,0 m/s.',
-            emoji: '🔗'
-          },
-          {
-            name: 'Desplantes pliométricos',
-            setsReps: '3 × 6 por pierna',
-            instructions: 'Saltar de zancada a zancada con mancuernas ligeras o solo peso corporal.',
-            emoji: '🦘'
-          },
-          {
-            name: 'Sprint en cinta inclinada o pedaleo de alta cadencia',
-            setsReps: '3 × 30 s',
-            instructions: 'Realizar sprints inmediatamente después de los ejercicios para transferir la potencia a la carrera o al pedaleo.',
-            emoji: '🚴'
-          }
+          { name: 'Sentadilla jump con carga', setsReps: '4 × 4–6', instructions: 'Utilizar 20–40 % 1RM. Monitorear que la velocidad pico supere 1,0 m/s. Aterrizar suave.', emoji: '🚀' },
+          { name: 'Peso muerto con trap bar de alta velocidad', setsReps: '3 × 4–5', instructions: 'Trabajar con 50–60 % 1RM a velocidades de 0,8–1,0 m/s.', emoji: '🔗' },
+          { name: 'Desplantes pliométricos', setsReps: '3 × 6 por pierna', instructions: 'Saltar de zancada a zancada con mancuernas ligeras o solo peso corporal.', emoji: '🦘' },
+          { name: 'Sprint en cinta inclinada o pedaleo de alta cadencia', setsReps: '3 × 30 s', instructions: 'Realizar sprints inmediatamente después de los ejercicios para transferir la potencia a la carrera o al pedaleo.', emoji: '🚴' }
         ],
         'Día 2': [
-          {
-            name: 'Sentadilla búlgara con salto',
-            setsReps: '3 × 5 por pierna',
-            instructions: 'Cargar con mancuerna ligera (10–20 % 1RM). Realizar salto explosivo manteniendo equilibrio.',
-            emoji: '🤸'
-          },
-          {
-            name: 'Hip thrust explosivo',
-            setsReps: '3 × 6',
-            instructions: 'Utilizar banda elástica o peso moderado. Elevar la cadera rápidamente con velocidad > 1 m/s.',
-            emoji: '🍑'
-          },
-          {
-            name: 'Step‑up rápido con barra ligera',
-            setsReps: '3 × 6–8 por pierna',
-            instructions: 'Enfocarse en velocidad y coordinación; medir con el encoder para mantener 1–1,3 m/s.',
-            emoji: '📦'
-          },
-          {
-            name: 'Saltos en cajón o bounds',
-            setsReps: '2 × 6–8',
-            instructions: 'Pliometría pura para mejorar la elasticidad tendinosa y la capacidad de producir fuerza rápidamente.',
-            emoji: '📥'
-          }
+          { name: 'Sentadilla búlgara con salto', setsReps: '3 × 5 por pierna', instructions: 'Cargar con mancuerna ligera (10–20 % 1RM). Realizar salto explosivo manteniendo equilibrio.', emoji: '🤸' },
+          { name: 'Hip thrust explosivo', setsReps: '3 × 6', instructions: 'Utilizar banda elástica o peso moderado. Elevar la cadera rápidamente con velocidad > 1 m/s.', emoji: '🍑' },
+          { name: 'Step‑up rápido con barra ligera', setsReps: '3 × 6–8 por pierna', instructions: 'Enfocarse en velocidad y coordinación; medir con el encoder para mantener 1–1,3 m/s.', emoji: '📦' },
+          { name: 'Saltos en cajón o bounds', setsReps: '2 × 6–8', instructions: 'Pliometría pura para mejorar la elasticidad tendinosa y la capacidad de producir fuerza rápidamente.', emoji: '📥' }
         ]
       }
     };
 
-    /**
-     * Extrae un valor medio de repeticiones a partir de una cadena como "3 × 6–8"
-     * devolviendo el promedio de las cifras de repeticiones.
-     * Esto sirve para estimar el 1RM a partir del peso usado.
-     */
+    // Utilidades para cálculo de repeticiones medias y predicción de 1RM
     function parseAvgRep(setsReps) {
-      // Buscar coincidencias de números separados por una '×' y un rango opcional.
       const match = setsReps.match(/\d+\s*[×xX]\s*(\d+)(?:[–-](\d+))?/);
       if (!match) return 0;
       const minRep = parseInt(match[1], 10);
@@ -198,36 +66,21 @@
       return (minRep + maxRep) / 2;
     }
 
-    /**
-     * Estima el 1RM según la fórmula de Epley: 1RM = peso / (1 - repeticiones × 0,025)
-     */
     function predict1RM(weight, avgRep) {
       if (!weight || !avgRep) return null;
       const est = weight / (1 - avgRep * 0.025);
       return Math.round(est * 10) / 10;
     }
 
-    /**
-     * Obtiene los registros guardados del almacenamiento local.
-     * Estructura del registro: array de sesiones { date, phase, day, exercises: { name: peso, ... } }
-     */
+    // Gestión de logs en localStorage
     function loadLogs() {
       const raw = localStorage.getItem('legLogs');
       return raw ? JSON.parse(raw) : [];
     }
-
-    /**
-     * Guarda los registros en el almacenamiento local.
-     */
     function saveLogs(logs) {
       localStorage.setItem('legLogs', JSON.stringify(logs));
     }
-
-    /**
-     * Devuelve el último peso registrado para un ejercicio dado.
-     */
     function getLastWeight(logs, exerciseName) {
-      // Recorrer los registros en orden inverso buscando el último registro que contenga el ejercicio.
       for (let i = logs.length - 1; i >= 0; i--) {
         const session = logs[i];
         if (session.exercises && session.exercises[exerciseName]) {
@@ -236,33 +89,202 @@
       }
       return null;
     }
-
-    /**
-     * Calcula la sugerencia de peso para el siguiente entrenamiento en función del último peso.
-     * Si no hay registro previo, devuelve cadena vacía.
-     */
     function getSuggestion(logs, exerciseName) {
       const last = getLastWeight(logs, exerciseName);
       if (!last) return '';
-      return Math.round(last * 1.05 * 10) / 10; // incrementar 5 %
+      return Math.round(last * 1.05 * 10) / 10;
     }
 
-    function App() {
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const [selectedPhase, setSelectedPhase] = React.useState(Object.keys(plan)[0]);
-      const [selectedDay, setSelectedDay] = React.useState(Object.keys(plan[Object.keys(plan)[0]])[0]);
-      const [sessionDate, setSessionDate] = React.useState(todayStr);
-      const [logs, setLogs] = React.useState(loadLogs());
-      // currentWeights guarda el peso introducido por el usuario para cada ejercicio en la sesión actual
-      const [currentWeights, setCurrentWeights] = React.useState({});
+    // Estado de la aplicación
+    let logs = loadLogs();
+    let selectedPhase = Object.keys(plan)[0];
+    let selectedDay = Object.keys(plan[selectedPhase])[0];
+    let sessionDate = new Date().toISOString().slice(0, 10);
+    let currentWeights = {};
 
-      // Actualiza currentWeights al introducir peso
-      const handleWeightChange = (exerciseName, value) => {
-        setCurrentWeights(prev => ({ ...prev, [exerciseName]: value }));
-      };
+    function render() {
+      const app = document.getElementById('app');
+      app.innerHTML = '';
 
-      // Maneja el guardado de la sesión actual
-      const handleSaveSession = () => {
+      // Título
+      const title = document.createElement('h1');
+      title.className = 'text-2xl font-bold mb-4 text-gray-800';
+      title.textContent = 'Registro de Entrenamiento de Piernas';
+      app.appendChild(title);
+
+      // Contenedor de selectores
+      const selectors = document.createElement('div');
+      selectors.className = 'grid grid-cols-1 md:grid-cols-3 gap-4 mb-4';
+
+      // Selector de fase
+      const phaseDiv = document.createElement('div');
+      phaseDiv.className = 'flex flex-col';
+      const phaseLabel = document.createElement('label');
+      phaseLabel.className = 'font-semibold mb-1 text-gray-700';
+      phaseLabel.textContent = 'Fase';
+      const phaseSelect = document.createElement('select');
+      phaseSelect.className = 'p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500';
+      Object.keys(plan).forEach(phase => {
+        const opt = document.createElement('option');
+        opt.value = phase;
+        opt.textContent = phase;
+        if (phase === selectedPhase) opt.selected = true;
+        phaseSelect.appendChild(opt);
+      });
+      phaseSelect.addEventListener('change', e => {
+        selectedPhase = e.target.value;
+        selectedDay = Object.keys(plan[selectedPhase])[0];
+        currentWeights = {};
+        render();
+      });
+      phaseDiv.appendChild(phaseLabel);
+      phaseDiv.appendChild(phaseSelect);
+      selectors.appendChild(phaseDiv);
+
+      // Selector de día
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'flex flex-col';
+      const dayLabel = document.createElement('label');
+      dayLabel.className = 'font-semibold mb-1 text-gray-700';
+      dayLabel.textContent = 'Día';
+      const daySelect = document.createElement('select');
+      daySelect.className = 'p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500';
+      Object.keys(plan[selectedPhase]).forEach(day => {
+        const opt = document.createElement('option');
+        opt.value = day;
+        opt.textContent = day;
+        if (day === selectedDay) opt.selected = true;
+        daySelect.appendChild(opt);
+      });
+      daySelect.addEventListener('change', e => {
+        selectedDay = e.target.value;
+        currentWeights = {};
+        render();
+      });
+      dayDiv.appendChild(dayLabel);
+      dayDiv.appendChild(daySelect);
+      selectors.appendChild(dayDiv);
+
+      // Selector de fecha
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'flex flex-col';
+      const dateLabel = document.createElement('label');
+      dateLabel.className = 'font-semibold mb-1 text-gray-700';
+      dateLabel.textContent = 'Fecha de la sesión';
+      const dateInput = document.createElement('input');
+      dateInput.type = 'date';
+      dateInput.className = 'p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500';
+      dateInput.value = sessionDate;
+      dateInput.addEventListener('change', e => {
+        sessionDate = e.target.value;
+      });
+      dateDiv.appendChild(dateLabel);
+      dateDiv.appendChild(dateInput);
+      selectors.appendChild(dateDiv);
+
+      app.appendChild(selectors);
+
+      // Tabla de ejercicios
+      const tableDiv = document.createElement('div');
+      tableDiv.className = 'overflow-x-auto mb-4';
+      const table = document.createElement('table');
+      table.className = 'min-w-full text-sm divide-y divide-gray-200';
+      const thead = document.createElement('thead');
+      thead.className = 'bg-gray-100 text-gray-700';
+      thead.innerHTML = `<tr>
+        <th class="py-2 px-2">Ejercicio</th>
+        <th class="py-2 px-2">Series × rep.</th>
+        <th class="py-2 px-2">Indicaciones</th>
+        <th class="py-2 px-2">Último peso (kg)</th>
+        <th class="py-2 px-2">1RM estimado (kg)</th>
+        <th class="py-2 px-2">Introduce tu peso (kg)</th>
+      </tr>`;
+      const tbody = document.createElement('tbody');
+      tbody.className = 'bg-white divide-y divide-gray-200';
+
+      // Genera filas para cada ejercicio
+      function populateTable() {
+        tbody.innerHTML = '';
+        const exercises = plan[selectedPhase][selectedDay];
+        exercises.forEach(ex => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-blue-50';
+          // Nombre y emoji
+          const tdName = document.createElement('td');
+          tdName.className = 'py-2 px-2 whitespace-nowrap font-medium flex items-center space-x-2';
+          const spanEmoji = document.createElement('span');
+          spanEmoji.className = 'text-xl';
+          spanEmoji.textContent = ex.emoji;
+          const spanName = document.createElement('span');
+          spanName.textContent = ex.name;
+          tdName.appendChild(spanEmoji);
+          tdName.appendChild(spanName);
+          // Series x rep
+          const tdSets = document.createElement('td');
+          tdSets.className = 'py-2 px-2 whitespace-nowrap';
+          tdSets.textContent = ex.setsReps;
+          // Indicaciones
+          const tdInstr = document.createElement('td');
+          tdInstr.className = 'py-2 px-2';
+          tdInstr.textContent = ex.instructions;
+          // Último peso
+          const lastWeight = getLastWeight(logs, ex.name);
+          const tdLast = document.createElement('td');
+          tdLast.className = 'py-2 px-2 text-center';
+          tdLast.textContent = lastWeight ?? '-';
+          // 1RM estimado
+          const avgRep = parseAvgRep(ex.setsReps);
+          const last1RM = lastWeight ? predict1RM(lastWeight, avgRep) : null;
+          const td1RM = document.createElement('td');
+          td1RM.className = 'py-2 px-2 text-center';
+          td1RM.textContent = last1RM ?? '-';
+          // Input de peso
+          const tdInput = document.createElement('td');
+          tdInput.className = 'py-2 px-2';
+          const divInput = document.createElement('div');
+          divInput.className = 'flex items-center space-x-1';
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.min = '0';
+          input.step = '0.5';
+          input.className = 'w-24 p-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500';
+          const suggestion = getSuggestion(logs, ex.name);
+          input.placeholder = suggestion || '0';
+          input.value = currentWeights[ex.name] || '';
+          input.addEventListener('input', e => {
+            const val = parseFloat(e.target.value);
+            if (!isNaN(val)) currentWeights[ex.name] = val;
+            else delete currentWeights[ex.name];
+          });
+          divInput.appendChild(input);
+          if (suggestion) {
+            const spanSug = document.createElement('span');
+            spanSug.className = 'text-xs text-gray-500';
+            spanSug.textContent = `(sug: ${suggestion})`;
+            divInput.appendChild(spanSug);
+          }
+          tdInput.appendChild(divInput);
+          // Añadir celdas a fila
+          tr.appendChild(tdName);
+          tr.appendChild(tdSets);
+          tr.appendChild(tdInstr);
+          tr.appendChild(tdLast);
+          tr.appendChild(td1RM);
+          tr.appendChild(tdInput);
+          tbody.appendChild(tr);
+        });
+      }
+      populateTable();
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      tableDiv.appendChild(table);
+      app.appendChild(tableDiv);
+
+      // Botón de guardar sesión
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors';
+      saveBtn.textContent = 'Guardar sesión';
+      saveBtn.addEventListener('click', () => {
         if (!sessionDate) return;
         const newSession = {
           date: sessionDate,
@@ -270,162 +292,76 @@
           day: selectedDay,
           exercises: { ...currentWeights }
         };
-        const newLogs = [...logs, newSession];
-        setLogs(newLogs);
-        saveLogs(newLogs);
-        // Limpia pesos introducidos tras guardar
-        setCurrentWeights({});
+        logs.push(newSession);
+        saveLogs(logs);
+        currentWeights = {};
+        // Reiniciar tabla y mostrar notificación
+        populateTable();
+        renderLogsSection();
         alert('Sesión guardada correctamente');
-      };
+      });
+      app.appendChild(saveBtn);
 
-      // Obtiene la lista de ejercicios según fase y día seleccionados
-      const exercises = plan[selectedPhase][selectedDay];
+      // Sección de historial
+      const historyDiv = document.createElement('div');
+      historyDiv.className = 'mt-8';
+      const histTitle = document.createElement('h2');
+      histTitle.className = 'text-xl font-semibold mb-2 text-gray-800';
+      histTitle.textContent = 'Historial de sesiones';
+      historyDiv.appendChild(histTitle);
+      const histContent = document.createElement('div');
+      historyDiv.appendChild(histContent);
+      app.appendChild(historyDiv);
 
-      return (
-        <div className="bg-white bg-opacity-70 rounded-lg shadow-xl p-6">
-          <h1 className="text-2xl font-bold mb-4 text-gray-800">Registro de Entrenamiento de Piernas</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            {/* Selector de fase */}
-            <div className="flex flex-col">
-              <label className="font-semibold mb-1 text-gray-700">Fase</label>
-              <select
-                className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={selectedPhase}
-                onChange={e => {
-                  setSelectedPhase(e.target.value);
-                  // Ajustar día seleccionado al primero de la nueva fase
-                  const firstDay = Object.keys(plan[e.target.value])[0];
-                  setSelectedDay(firstDay);
-                }}
-              >
-                {Object.keys(plan).map(phase => (
-                  <option key={phase} value={phase}>{phase}</option>
-                ))}
-              </select>
-            </div>
-            {/* Selector de día */}
-            <div className="flex flex-col">
-              <label className="font-semibold mb-1 text-gray-700">Día</label>
-              <select
-                className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={selectedDay}
-                onChange={e => setSelectedDay(e.target.value)}
-              >
-                {Object.keys(plan[selectedPhase]).map(day => (
-                  <option key={day} value={day}>{day}</option>
-                ))}
-              </select>
-            </div>
-            {/* Selector de fecha */}
-            <div className="flex flex-col">
-              <label className="font-semibold mb-1 text-gray-700">Fecha de la sesión</label>
-              <input
-                type="date"
-                className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={sessionDate}
-                onChange={e => setSessionDate(e.target.value)}
-              />
-            </div>
-          </div>
-          {/* Tabla de ejercicios */}
-          <div className="overflow-x-auto mb-4">
-            <table className="min-w-full text-sm divide-y divide-gray-200">
-              <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="py-2 px-2">Ejercicio</th>
-                  <th className="py-2 px-2">Series × rep.</th>
-                  <th className="py-2 px-2">Indicaciones</th>
-                  <th className="py-2 px-2">Último peso (kg)</th>
-                  <th className="py-2 px-2">1RM estimado (kg)</th>
-                  <th className="py-2 px-2">Introduce tu peso (kg)</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {exercises.map(exercise => {
-                  const lastWeight = getLastWeight(logs, exercise.name);
-                  const avgRep = parseAvgRep(exercise.setsReps);
-                  const last1RM = lastWeight ? predict1RM(lastWeight, avgRep) : '';
-                  const suggestion = getSuggestion(logs, exercise.name);
-                  return (
-                    <tr key={exercise.name} className="hover:bg-blue-50">
-                      <td className="py-2 px-2 whitespace-nowrap font-medium flex items-center space-x-2">
-                        <span className="text-xl">{exercise.emoji}</span>
-                        <span>{exercise.name}</span>
-                      </td>
-                      <td className="py-2 px-2 whitespace-nowrap">{exercise.setsReps}</td>
-                      <td className="py-2 px-2">{exercise.instructions}</td>
-                      <td className="py-2 px-2 text-center">{lastWeight ?? '-'}</td>
-                      <td className="py-2 px-2 text-center">{last1RM ?? '-'}</td>
-                      <td className="py-2 px-2">
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            className="w-24 p-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder={suggestion || '0'}
-                            value={currentWeights[exercise.name] || ''}
-                            onChange={e => handleWeightChange(exercise.name, parseFloat(e.target.value))}
-                          />
-                          {suggestion && (
-                            <span className="text-xs text-gray-500">(sug: {suggestion})</span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-            onClick={handleSaveSession}
-          >
-            Guardar sesión
-          </button>
-          {/* Historial de sesiones */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">Historial de sesiones</h2>
-            {logs.length === 0 ? (
-              <p className="text-gray-600">No hay sesiones registradas.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm divide-y divide-gray-200">
-                  <thead className="bg-gray-100 text-gray-700">
-                    <tr>
-                      <th className="py-2 px-2">Fecha</th>
-                      <th className="py-2 px-2">Fase</th>
-                      <th className="py-2 px-2">Día</th>
-                      <th className="py-2 px-2">Ejercicios y pesos</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {logs.map((session, idx) => (
-                      <tr key={idx}>
-                        <td className="py-2 px-2 whitespace-nowrap">{session.date}</td>
-                        <td className="py-2 px-2 whitespace-nowrap">{session.phase}</td>
-                        <td className="py-2 px-2 whitespace-nowrap">{session.day}</td>
-                        <td className="py-2 px-2">
-                          {Object.entries(session.exercises).map(([ex, wt]) => (
-                            <div key={ex} className="flex items-center space-x-1">
-                              <span className="font-semibold">{ex}:</span>
-                              <span>{wt || '-'} kg</span>
-                            </div>
-                          ))}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      );
+      function renderLogsSection() {
+        histContent.innerHTML = '';
+        if (logs.length === 0) {
+          const p = document.createElement('p');
+          p.className = 'text-gray-600';
+          p.textContent = 'No hay sesiones registradas.';
+          histContent.appendChild(p);
+        } else {
+          const table = document.createElement('table');
+          table.className = 'min-w-full text-sm divide-y divide-gray-200';
+          const thead = document.createElement('thead');
+          thead.className = 'bg-gray-100 text-gray-700';
+          thead.innerHTML = `<tr>
+            <th class="py-2 px-2">Fecha</th>
+            <th class="py-2 px-2">Fase</th>
+            <th class="py-2 px-2">Día</th>
+            <th class="py-2 px-2">Ejercicios y pesos</th>
+          </tr>`;
+          const tbody = document.createElement('tbody');
+          tbody.className = 'bg-white divide-y divide-gray-200';
+          logs.forEach(session => {
+            const tr = document.createElement('tr');
+            const tdDate = document.createElement('td'); tdDate.className = 'py-2 px-2 whitespace-nowrap'; tdDate.textContent = session.date;
+            const tdPhase = document.createElement('td'); tdPhase.className = 'py-2 px-2 whitespace-nowrap'; tdPhase.textContent = session.phase;
+            const tdDay = document.createElement('td'); tdDay.className = 'py-2 px-2 whitespace-nowrap'; tdDay.textContent = session.day;
+            const tdEx = document.createElement('td'); tdEx.className = 'py-2 px-2';
+            Object.entries(session.exercises).forEach(([exName, wt]) => {
+              const div = document.createElement('div');
+              div.className = 'flex items-center space-x-1';
+              const spanName = document.createElement('span'); spanName.className = 'font-semibold'; spanName.textContent = exName + ':';
+              const spanWt = document.createElement('span'); spanWt.textContent = wt || '-' + ' kg';
+              div.appendChild(spanName);
+              div.appendChild(spanWt);
+              tdEx.appendChild(div);
+            });
+            tr.appendChild(tdDate);
+            tr.appendChild(tdPhase);
+            tr.appendChild(tdDay);
+            tr.appendChild(tdEx);
+            tbody.appendChild(tr);
+          });
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          histContent.appendChild(table);
+        }
+      }
+      renderLogsSection();
     }
-
-    ReactDOM.render(<App />, document.getElementById('root'));
+    document.addEventListener('DOMContentLoaded', render);
   </script>
 </body>
 </html>
